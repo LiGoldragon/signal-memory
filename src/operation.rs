@@ -12,10 +12,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 /// own executable command records and project them into this enum
 /// for observation and filtering.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(
-    feature = "nota-text",
-    derive(nota::NotaEncode, nota::NotaDecode)
-)]
+#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
 pub enum SemaOperation {
     /// Insert or append a typed record.
     Assert,
@@ -117,10 +114,7 @@ impl ToSemaOperation for SemaOperation {
 /// state. The classes are stable; new Sema operations declare their
 /// class as part of their definition.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(
-    feature = "nota-text",
-    derive(nota::NotaEncode, nota::NotaDecode)
-)]
+#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
 pub enum OperationClass {
     /// Transactional change to typed-record state. `Assert`,
     /// `Mutate`, `Retract`.

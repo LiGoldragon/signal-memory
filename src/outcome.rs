@@ -14,10 +14,7 @@ use crate::{SemaOperation, ToSemaOperation};
 /// events carry those details separately; this enum classifies what
 /// happened in the broad workspace vocabulary.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(
-    feature = "nota-text",
-    derive(nota::NotaEncode, nota::NotaDecode)
-)]
+#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
 pub enum SemaOutcome {
     /// A new typed fact / event / row was appended.
     Asserted,
@@ -94,10 +91,7 @@ impl ToSemaOutcome for SemaOutcome {
 /// Universal observation label produced from a component command and
 /// the effect it caused.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(
-    feature = "nota-text",
-    derive(nota::NotaEncode, nota::NotaDecode)
-)]
+#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
 pub struct SemaObservation {
     pub operation: SemaOperation,
     pub outcome: SemaOutcome,

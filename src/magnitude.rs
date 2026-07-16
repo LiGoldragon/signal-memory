@@ -7,10 +7,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 /// Ordered qualitative magnitude, from zero through maximum.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(
-    feature = "nota-text",
-    derive(nota::NotaEncode, nota::NotaDecode)
-)]
+#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
 #[repr(u8)]
 pub enum Magnitude {
     Minimum = 0,
