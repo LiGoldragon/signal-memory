@@ -100,9 +100,9 @@ fn pattern_field_string_match_emits_bare_when_pascal_case() {
 
 #[test]
 #[cfg(feature = "nota-text")]
-fn pattern_field_string_match_emits_bracket_string_when_not_bare_eligible() {
+fn pattern_field_string_match_emits_parenthesized_string_when_not_bare_eligible() {
     let pattern: PatternField<String> = PatternField::Match("hello world".into());
-    assert_eq!(encode(&pattern), "[hello world]");
+    assert_eq!(encode(&pattern), "(hello world)");
 }
 
 #[test]
