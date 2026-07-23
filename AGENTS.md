@@ -14,3 +14,5 @@ It is not a daemon, not an actor runtime, and not a component contract.
 - Keep component-domain payloads out.
 - Keep daemon/runtime policy out.
 - Add round-trip witnesses for every public record.
+
+This repository is under fast development and constantly breaking.
