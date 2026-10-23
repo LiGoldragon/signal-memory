@@ -20,9 +20,9 @@
   Match [(Query Query)]
   Subscribe [(Stream Stream)]
   Validate [(Plan Plan)]
-  SemaOperation [Assert Mutate Retract Match Subscribe Validate]
-  SemaOutcome [Asserted Mutated Retracted Matched Subscribed Validated Rejected]
-  SemaObservation (SemaOperation SemaOutcome)
+  MemoryOperation [Assert Mutate Retract Match Subscribe Validate]
+  MemoryOutcome [Asserted Mutated Retracted Matched Subscribed Validated Rejected]
+  MemoryObservation (MemoryOperation MemoryOutcome)
   Magnitude [Minimum VeryLow Low Medium High VeryHigh Maximum Zero]
   Fact (Text)
   Record (Text)

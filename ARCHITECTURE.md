@@ -1,6 +1,6 @@
-# signal-sema Architecture
+# signal-memory Architecture
 
-`signal-sema` owns the universal Sema classification vocabulary: the
+`signal-memory` owns the universal Memory classification vocabulary: the
 *payloadless* state-action class labels used for cross-component
 observation and introspection, plus the read-algebra pattern
 primitives, qualitative magnitude vocabulary, and typed identity
@@ -8,9 +8,9 @@ values components carry inside their own typed records.
 
 ## Direction
 
-`signal-sema` is the home of **Layer 3** in the three-layer model: the universal *payloadless* class labels (`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate`) used for cross-component observation and introspection. Daemons project their Component Commands and effects to Sema classes via `ToSemaOperation` and `ToSemaOutcome`; observers filter cross-component activity by class without knowing per-daemon command payloads. `signal-sema` is the universal vocabulary substrate every per-component schema imports rather than re-declaring.
+`signal-memory` is the home of **Layer 3** in the three-layer model: the universal *payloadless* class labels (`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate`) used for cross-component observation and introspection. Daemons project their Component Commands and effects to Memory classes via `ToMemoryOperation` and `ToMemoryOutcome`; observers filter cross-component activity by class without knowing per-daemon command payloads. `signal-memory` is the universal vocabulary substrate every per-component schema imports rather than re-declaring.
 
-`SemaOperation` and `SemaOutcome` are payloadless — variants never carry executable payloads or component event payloads. `Magnitude` is a closed ordered scale; **the vocabulary is the schema, and consumption is per-component policy** — never collapse the wire vocabulary to fit a current consumption policy. `signal-sema` does not depend on `signal-frame`; the frame layer and the Sema classification vocabulary are separate concerns.
+`MemoryOperation` and `MemoryOutcome` are payloadless — variants never carry executable payloads or component event payloads. `Magnitude` is a closed ordered scale; **the vocabulary is the schema, and consumption is per-component policy** — never collapse the wire vocabulary to fit a current consumption policy. `signal-memory` does not depend on `signal-frame`; the frame layer and the Memory classification vocabulary are separate concerns.
 
 The classification vocabulary is the third layer of the three-layer
 model affirmed 2026-05-20 (per
@@ -21,13 +21,13 @@ and `intent/component-shape.dotos` 2026-05-20T02:00Z):
 |---|---|---|
 | Contract Operation (external, on the wire) | the domain action the caller invokes | `Submit(Message)`, `Query(Selection)`, `State(Statement)` |
 | Component Command (internal, per-daemon) | the daemon's typed executable record | `LedgerCommand::RecordEvent(EventRecord)`, `SpiritCommand::AssertEntry(Entry)` |
-| Sema Operation (cross-component classification) | the universal payloadless class label | `Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate` |
+| Memory Operation (cross-component classification) | the universal payloadless class label | `Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate` |
 
-`signal-sema` is the home of Layer 3. Component contracts (Layer 1)
+`signal-memory` is the home of Layer 3. Component contracts (Layer 1)
 define their own domain verbs in their `signal-<component>` crates;
 daemons (Layer 2) define their typed Command and Effect enums
-internally and project to Sema classes via `ToSemaOperation` and
-`ToSemaOutcome` traits so observers can filter on classification
+internally and project to Memory classes via `ToMemoryOperation` and
+`ToMemoryOutcome` traits so observers can filter on classification
 without knowing per-daemon command payloads.
 
 The earlier migration that introduced this crate is described in the
@@ -36,30 +36,30 @@ primary workspace:
 - `reports/designer/238-signal-architecture-redirection-contract-local-verbs.md`
 - `reports/designer/239-signal-architecture-migration-plan.md`
 - `reports/designer/246-v4-bundled-fix-deep-design-with-examples.md`
-  (three-layer affirmation; supersedes the earlier "Sema as
+  (three-layer affirmation; supersedes the earlier "Memory as
   execution vocabulary" framing).
 - `reports/designer/248-three-layer-changes-for-operators.md`
   (per-crate impact summary).
 
 ## Constraints
 
-- `signal-sema` is a Rust library crate.
-- `signal-sema` contains no daemon, actor, socket, redb, or runtime code.
-- `signal-sema` contains no Persona-specific, Criome-specific, or
+- `signal-memory` is a Rust library crate.
+- `signal-memory` contains no daemon, actor, socket, redb, or runtime code.
+- `signal-memory` contains no Persona-specific, Criome-specific, or
   component-specific payload records.
-- `signal-sema` does not depend on `signal-frame`; the frame layer and
-  the Sema classification vocabulary are separate. (Other contract
+- `signal-memory` does not depend on `signal-frame`; the frame layer and
+  the Memory classification vocabulary are separate. (Other contract
   crates may depend on both.)
-- `SemaOperation` is the closed command classification set —
+- `MemoryOperation` is the closed command classification set —
   payloadless variants only; never carries executable payloads.
-- `SemaOutcome` is the closed effect classification set —
+- `MemoryOutcome` is the closed effect classification set —
   payloadless variants only; never carries component event payloads.
-- `SemaObservation` joins one `SemaOperation` with one `SemaOutcome`;
+- `MemoryObservation` joins one `MemoryOperation` with one `MemoryOutcome`;
   it does not carry timing, sequence, or component payload data.
-- `SemaOperation` is rkyv-archivable in the default binary library;
+- `MemoryOperation` is rkyv-archivable in the default binary library;
   DOTOS encoding/decoding is available only under the `dotos-text`
   feature.
-- `SemaOutcome` and `SemaObservation` are rkyv-archivable in the
+- `MemoryOutcome` and `MemoryObservation` are rkyv-archivable in the
   default binary library; DOTOS encoding/decoding is available only
   under the `dotos-text` feature.
 - `Magnitude` currently encodes the eight ordered qualitative
@@ -67,11 +67,11 @@ primary workspace:
   policy-neutral bottom rung for "no signal" / withdrawn strength.
   Its rkyv discriminant is intentionally appended after the original
   seven variants so archived data keeps the same byte meaning.
-- `SemaOperation` record-head spelling is PascalCase and stable.
+- `MemoryOperation` record-head spelling is PascalCase and stable.
 - Atomicity is structural in the engine request/commit shape and is
-  expressed via typed component commands (Layer 2), not via Sema
+  expressed via typed component commands (Layer 2), not via Memory
   variants.
-- Type names inside the crate do not restate the `Sema` or `Signal`
+- Type names inside the crate do not restate the `Memory` or `Signal`
   namespace; the domain is implicit. (Per
   `~/primary/skills/naming.md`.)
 
@@ -109,12 +109,12 @@ fine-grained decision dispatch on the class itself.
 | `Validated` | A dry-run validation or planning request completed. |
 | `NoChange` | The request completed without changing observable state. |
 
-`SemaObservation` composes both halves:
+`MemoryObservation` composes both halves:
 
 ```rust
-SemaObservation {
-    operation: command.to_sema_operation(),
-    outcome: effect.to_sema_outcome(),
+MemoryObservation {
+    operation: command.to_memory_operation(),
+    outcome: effect.to_memory_outcome(),
 }
 ```
 
@@ -139,7 +139,7 @@ The current deployed schema is the eight ordered rungs below:
 | `Maximum` | Highest strength on the scale. |
 
 The current set is **closed** and **ordered** (`PartialOrd` and
-`Ord` expose the semantic rank). Components match a subset
+`Ord` expose the memoryntic rank). Components match a subset
 (`magnitude == Maximum`), use range comparison (`magnitude >= High`),
 or read the full variant set.
 
@@ -211,37 +211,37 @@ values only.
 | `Revision` | `u64` generation | Monotonic generation counter at a slot. |
 
 Allocation, lookup, compare-and-set, and persistence belong to each
-daemon's `CommandExecutor` (over `sema-engine`); this crate only owns
+daemon's `CommandExecutor` (over `memory-engine`); this crate only owns
 the typed wire shape and the family marker.
 
-## SemaObservation as a Tier-2-shaped type
+## MemoryObservation as a Tier-2-shaped type
 
-*Cross-cutting wire-and-observation discipline that `signal-sema`
+*Cross-cutting wire-and-observation discipline that `signal-memory`
 contributes to the three-tier signal sizing in
 `signal-frame/ARCHITECTURE.md` §5. Captured per Spirit records 244
 (three-tier sizing baseline), 251 (Part 1 leans ratified, including
-Q1.6 — SemaObservation is naturally Tier-2-shaped), 271 (64-bit
+Q1.6 — MemoryObservation is naturally Tier-2-shaped), 271 (64-bit
 verb-namespace structure), 272 (universal data variants
 pre-allocated across namespaces), 273 (extended 64-byte
 identity-bearing tier).*
 
-`SemaObservation` is **structurally a Tier-2-shaped type** — small,
-universal, classification-only. It joins one `SemaOperation`
-(payloadless command class) with one `SemaOutcome` (payloadless
+`MemoryObservation` is **structurally a Tier-2-shaped type** — small,
+universal, classification-only. It joins one `MemoryOperation`
+(payloadless command class) with one `MemoryOutcome` (payloadless
 effect class) and never carries timing, sequence, or component
 payload data. That shape makes it the natural cross-cutting Tier 1
 projection for every observable channel that wants a uniform
 verb-namespace stream for `persona-introspect` aggregation.
 
-### Verb-namespace shape applied to SemaObservation
+### Verb-namespace shape applied to MemoryObservation
 
 The 64-bit verb-namespace structure from
-`signal-frame/ARCHITECTURE.md` §5.2 maps onto a `SemaObservation`
+`signal-frame/ARCHITECTURE.md` §5.2 maps onto a `MemoryObservation`
 Tier 1 projection as follows:
 
 ```mermaid
 flowchart LR
-    byte_zero["byte 0<br/>sema kind<br/>(beingness — Assert, Mutate,<br/>Retract, Match, Subscribe, Validate)"]
+    byte_zero["byte 0<br/>memory kind<br/>(beingness — Assert, Mutate,<br/>Retract, Match, Subscribe, Validate)"]
     byte_one["byte 1<br/>outcome<br/>(Asserted, Mutated, Retracted,<br/>Matched, Subscribed, Validated, NoChange)"]
     byte_two["byte 2<br/>component<br/>(ComponentKind tag)"]
     byte_three["byte 3<br/>operation class<br/>(Write, Read, Stream, Validation)"]
@@ -254,7 +254,7 @@ flowchart LR
     style byte_zero fill:#fef
 ```
 
-Byte 0 carries the **sema kind** — `SemaOperation` as the root verb,
+Byte 0 carries the **memory kind** — `MemoryOperation` as the root verb,
 its variant index packed as a `u8`. The classification IS the
 "beingness" of the observation per the verb-namespace rule (Spirit
 record 271). Bytes 1-7 are sub-classifications: the outcome class,
@@ -266,9 +266,9 @@ sequence. Each field is independently indexable through low-byte
 shifts.
 
 This packing fits within a `u64` exactly. The `LogVariant`
-projection for `SemaObservation` is hand-implemented (per /155 §1.5
+projection for `MemoryObservation` is hand-implemented (per /155 §1.5
 the macro auto-derive is for `signal_channel!`-generated types;
-`SemaObservation` is hand-defined in this crate). The shape stays
+`MemoryObservation` is hand-defined in this crate). The shape stays
 stable while the byte assignments above are illustrative — the
 final byte-layout choice is the canonical Tier 1 implementation
 bead's call.
@@ -278,7 +278,7 @@ bead's call.
 Per Spirit record 272, universal data sub-variants (`U8`, `U16`,
 and growing) are pre-allocated across all signal namespaces. The
 universal sub-variant set is owned by `signal-frame/ARCHITECTURE.md`
-§5.3; `SemaObservation` inherits it through the `extra` byte (byte
+§5.3; `MemoryObservation` inherits it through the `extra` byte (byte
 4 above) and through component-specific sub-variants that ride in
 later positions.
 
@@ -287,9 +287,9 @@ A worked example for the Criome 16-bit short ID (the canonical
 
 ```mermaid
 flowchart LR
-    obs["SemaObservation<br/>(Tier 1 projection)"]
-    obs --> byte_zero["byte 0<br/>SemaOperation::Assert"]
-    obs --> byte_one["byte 1<br/>SemaOutcome::Asserted"]
+    obs["MemoryObservation<br/>(Tier 1 projection)"]
+    obs --> byte_zero["byte 0<br/>MemoryOperation::Assert"]
+    obs --> byte_one["byte 1<br/>MemoryOutcome::Asserted"]
     obs --> byte_two["byte 2<br/>Criome component tag"]
     obs --> byte_three["byte 3<br/>OperationClass::Write"]
     obs --> bytes_four_five["bytes 4-5<br/>U16 — Criome 16-bit<br/>short public-key ID"]
@@ -306,16 +306,16 @@ Criome-namespace channel. The universal data variant convention is
 what gives cross-namespace observers a stable vocabulary in bytes
 1-7.
 
-### Tier 2 — when `SemaObservation` itself becomes a summary
+### Tier 2 — when `MemoryObservation` itself becomes a summary
 
-The 64-bit `SemaObservation` Tier 1 projection is the cross-cutting
+The 64-bit `MemoryObservation` Tier 1 projection is the cross-cutting
 observation grain; **the 64-byte Tier 2 projection adds room for
 identity-bearing context** (per Spirit record 273). A Tier-2
-`SemaObservation` summary carries:
+`MemoryObservation` summary carries:
 
 | Field | Width | Purpose |
 |---|---|---|
-| Tier 1 packed `u64` | 8 bytes | sema kind, outcome, component, class, extra, timing |
+| Tier 1 packed `u64` | 8 bytes | memory kind, outcome, component, class, extra, timing |
 | `Slot<Payload>` | 8 bytes | typed wire-identity reference to the affected record |
 | `Revision` | 8 bytes | generation counter at the slot |
 | component public key or signature | 32-48 bytes | identity-bearing context (e.g. Criome quorum public key) |
@@ -330,23 +330,23 @@ time.
 
 ### What this crate owns vs delegates
 
-`signal-sema` owns the `SemaOperation` / `SemaOutcome` /
-`SemaObservation` records and their classification semantics. The
+`signal-memory` owns the `MemoryOperation` / `MemoryOutcome` /
+`MemoryObservation` records and their classification memoryntics. The
 hand-written `LogVariant` and (when defined) `LogSummary` impls for
-`SemaObservation` live in this crate; the traits themselves live in
+`MemoryObservation` live in this crate; the traits themselves live in
 `signal-frame`. The universal data sub-variant set is owned by
-`signal-frame` §5.3 — `signal-sema` consumes it.
+`signal-frame` §5.3 — `signal-memory` consumes it.
 
 ### Open follow-ons
 
-- The hand-implementation of `LogVariant for SemaObservation`
-  tracks under bead `primary-2py5` (signal-sema: LogVariant impl
-  for SemaObservation — first canonical case).
+- The hand-implementation of `LogVariant for MemoryObservation`
+  tracks under bead `primary-2py5` (signal-memory: LogVariant impl
+  for MemoryObservation — first canonical case).
 - The final byte-layout choice in the §"Verb-namespace shape"
   diagram is illustrative; the bead author chooses whether to spend
   the trailing bytes on timestamp seconds, a sequence number, a
   third universal data variant, or split between them.
-- `SemaObservation` does not currently carry a component-identity
+- `MemoryObservation` does not currently carry a component-identity
   field; the byte-2 "component" tag above implies one. The
   `ComponentKind` enum (or a successor) lives outside this crate —
   the integration point is the bead author's design choice.
@@ -357,12 +357,12 @@ hand-written `LogVariant` and (when defined) `LogSummary` impls for
 flowchart TB
     contract["signal-&lt;component&gt; (Layer 1)<br/>Submit / Query / Configure / State"]
     daemon["component daemon (Layer 2)<br/>typed Component Command + Effect + CommandExecutor"]
-    sema["signal-sema (Layer 3)<br/>operation + outcome<br/>(payloadless classification)"]
+    memory["signal-memory (Layer 3)<br/>operation + outcome<br/>(payloadless classification)"]
     observer["persona-introspect / observers<br/>cross-component filtering by class"]
 
     contract --> daemon
-    daemon -. "ToSemaOperation + ToSemaOutcome projection" .-> sema
-    sema --> observer
+    daemon -. "ToMemoryOperation + ToMemoryOutcome projection" .-> memory
+    memory --> observer
 ```
 
 ## Non-Goals
@@ -371,7 +371,7 @@ flowchart TB
   `signal-<component>` crates).
 - No per-daemon executable Command vocabulary (Layer 2 lives in each
   daemon crate).
-- No executable payloads inside `SemaOperation` variants; the
+- No executable payloads inside `MemoryOperation` variants; the
   classification is payloadless.
 - No request/reply frame mechanics. (Frame envelope, handshake,
   exchange identifiers, async correlation, streams, and reply
@@ -379,7 +379,7 @@ flowchart TB
 - No authorization or routing.
 - No DOTOS surface policy beyond typed record codec.
 - No `ReadPlan` operators (`Constrain`, `Project`, `Aggregate`,
-  `Infer`, `Recurse`). Those belong in `sema-engine` and/or in
+  `Infer`, `Recurse`). Those belong in `memory-engine` and/or in
   component contracts that publish their read plans.
 - No `Request<Payload>` envelope. That lives in `signal-frame`.
 
@@ -401,14 +401,14 @@ uncertainty".*
 
 ```text
 src/lib.rs       module entry and re-exports
-src/operation.rs SemaOperation + OperationClass; DotosEnum derives
-src/outcome.rs   SemaOutcome + SemaObservation; DotosEnum/DotosRecord derives
+src/operation.rs MemoryOperation + OperationClass; DotosEnum derives
+src/outcome.rs   MemoryOutcome + MemoryObservation; DotosEnum/DotosRecord derives
 src/magnitude.rs Magnitude; current ordered eight-level DotosEnum
 src/pattern.rs   Bind, Wildcard, PatternField<T>; hand-written codec
 src/identity.rs  Slot<Payload>, Revision; rkyv identity records
-tests/operation.rs   SemaOperation round trips (DOTOS + rkyv) and
+tests/operation.rs   MemoryOperation round trips (DOTOS + rkyv) and
                      class/is-write witnesses
-tests/outcome.rs     SemaOutcome + SemaObservation projection and
+tests/outcome.rs     MemoryOutcome + MemoryObservation projection and
                      round trips (DOTOS + rkyv)
 tests/magnitude.rs   Magnitude round trips (DOTOS + rkyv), current
                      ordering, unknown-head rejection, and canonical
@@ -423,9 +423,9 @@ examples/canonical.dotos  Canonical record-head spelling per operation/outcome
 
 **Status:** integrated into the brilliant macro library pattern per `reports/designer/326-v13-spirit-complete-schema-vision.md §3` (schemas as macro-pattern instance).
 
-**Role:** this crate is the universal vocabulary substrate. It owns `SemaOperation`, `SemaOutcome`, `SemaObservation`, `Magnitude`, the pattern primitives (`Bind`, `Wildcard`, `PatternField<T>`), and the identity primitives (`Slot<T>`, `Revision`). Every per-component schema imports these types via cross-schema imports and consumes them directly.
+**Role:** this crate is the universal vocabulary substrate. It owns `MemoryOperation`, `MemoryOutcome`, `MemoryObservation`, `Magnitude`, the pattern primitives (`Bind`, `Wildcard`, `PatternField<T>`), and the identity primitives (`Slot<T>`, `Revision`). Every per-component schema imports these types via cross-schema imports and consumes them directly.
 
-**Integration target:** universal SemaOperation / SemaOutcome vocabulary; cross-schema imports pull these types into per-component schemas. The schema-file `import sema` (or equivalent) construct lets a per-component schema reference `SemaOperation` and friends without redeclaring them; the AssembledSchema resolver per `/326-v13` + `operator/174` resolves these imports against this crate's published types and the macro emits direct binding to `signal-sema` instead of re-emitting the vocabulary.
+**Integration target:** universal MemoryOperation / MemoryOutcome vocabulary; cross-schema imports pull these types into per-component schemas. The schema-file `import memory` (or equivalent) construct lets a per-component schema reference `MemoryOperation` and friends without redeclaring them; the AssembledSchema resolver per `/326-v13` + `operator/174` resolves these imports against this crate's published types and the macro emits direct binding to `signal-memory` instead of re-emitting the vocabulary.
 
 **References:**
 - `reports/designer/326-v13-spirit-complete-schema-vision.md` — schema language + macro pattern

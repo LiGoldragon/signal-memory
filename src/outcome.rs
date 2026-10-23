@@ -1,21 +1,21 @@
-//! Outcome-side Sema classification.
+//! Outcome-side Memory classification.
 //!
 //! Component daemons execute component-local commands and produce
-//! component-local effects. [`SemaOutcome`] is the universal,
+//! component-local effects. [`MemoryOutcome`] is the universal,
 //! payloadless classification of those effects for observation.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-use crate::{SemaOperation, ToSemaOperation};
+use crate::{MemoryOperation, ToMemoryOperation};
 
-/// The closed outcome set visible to generic Sema observers.
+/// The closed outcome set visible to generic Memory observers.
 ///
 /// Outcomes do not carry executable or domain payloads. Component
 /// events carry those details separately; this enum classifies what
 /// happened in the broad workspace vocabulary.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
-pub enum SemaOutcome {
+pub enum MemoryOutcome {
     /// A new typed fact / event / row was appended.
     Asserted,
     /// An existing typed record transitioned at stable identity.
@@ -32,7 +32,7 @@ pub enum SemaOutcome {
     NoChange,
 }
 
-impl SemaOutcome {
+impl MemoryOutcome {
     /// PascalCase DOTOS record-head identifier for this outcome.
     pub const fn as_record_head(self) -> &'static str {
         match self {
@@ -47,7 +47,7 @@ impl SemaOutcome {
     }
 
     /// Parse a PascalCase DOTOS record-head identifier back to a
-    /// [`SemaOutcome`].
+    /// [`MemoryOutcome`].
     pub fn from_record_head(name: &str) -> Option<Self> {
         match name {
             "Asserted" => Some(Self::Asserted),
@@ -76,14 +76,14 @@ impl SemaOutcome {
     }
 }
 
-/// Projection from a component-local effect into the universal Sema
+/// Projection from a component-local effect into the universal Memory
 /// outcome classification vocabulary.
-pub trait ToSemaOutcome {
-    fn to_sema_outcome(&self) -> SemaOutcome;
+pub trait ToMemoryOutcome {
+    fn to_memory_outcome(&self) -> MemoryOutcome;
 }
 
-impl ToSemaOutcome for SemaOutcome {
-    fn to_sema_outcome(&self) -> SemaOutcome {
+impl ToMemoryOutcome for MemoryOutcome {
+    fn to_memory_outcome(&self) -> MemoryOutcome {
         *self
     }
 }
@@ -92,22 +92,22 @@ impl ToSemaOutcome for SemaOutcome {
 /// the effect it caused.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
-pub struct SemaObservation {
-    pub operation: SemaOperation,
-    pub outcome: SemaOutcome,
+pub struct MemoryObservation {
+    pub operation: MemoryOperation,
+    pub outcome: MemoryOutcome,
 }
 
-impl SemaObservation {
-    pub const fn new(operation: SemaOperation, outcome: SemaOutcome) -> Self {
+impl MemoryObservation {
+    pub const fn new(operation: MemoryOperation, outcome: MemoryOutcome) -> Self {
         Self { operation, outcome }
     }
 
     pub fn from_projection<Command, Effect>(command: &Command, effect: &Effect) -> Self
     where
-        Command: ToSemaOperation,
-        Effect: ToSemaOutcome,
+        Command: ToMemoryOperation,
+        Effect: ToMemoryOutcome,
     {
-        Self::new(command.to_sema_operation(), effect.to_sema_outcome())
+        Self::new(command.to_memory_operation(), effect.to_memory_outcome())
     }
 
     /// Stable compact observation code: operation byte, outcome byte, class byte.

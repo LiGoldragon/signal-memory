@@ -4,16 +4,16 @@
 //! breaks and names the variant that drifted.
 //!
 //! Inherited from `signal-core` per the architecture migration;
-//! pattern primitives now live in `signal-sema` because they pair
-//! with the [`SemaOperation::Match`] and [`SemaOperation::Subscribe`]
+//! pattern primitives now live in `signal-memory` because they pair
+//! with the [`MemoryOperation::Match`] and [`MemoryOperation::Subscribe`]
 //! read algebra. See `ARCHITECTURE.md` and the migration reports.
 
 #[cfg(feature = "dotos-text")]
 use dotos::{DotosDecode, DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
 #[cfg(feature = "dotos-text")]
-use signal_sema::PatternField;
-use signal_sema::{ArchivedBind, ArchivedWildcard, Bind, Wildcard};
+use signal_memory::PatternField;
+use signal_memory::{ArchivedBind, ArchivedWildcard, Bind, Wildcard};
 
 #[cfg(feature = "dotos-text")]
 fn encode<T: DotosEncode>(value: &T) -> String {

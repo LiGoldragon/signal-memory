@@ -1,4 +1,4 @@
-//! Sema classification and observation vocabulary.
+//! Memory classification and observation vocabulary.
 //!
 //! Public component contracts use domain-local operation verbs. This
 //! crate owns the payloadless operation and outcome labels that a
@@ -20,9 +20,10 @@ pub mod pattern;
 
 pub use identity::{ArchivedRevision, ArchivedSlot, Revision, Slot};
 pub use magnitude::{ArchivedMagnitude, Magnitude};
-pub use operation::{ArchivedSemaOperation, OperationClass, SemaOperation, ToSemaOperation};
+pub use operation::{ArchivedMemoryOperation, MemoryOperation, OperationClass, ToMemoryOperation};
 pub use outcome::{
-    ArchivedSemaObservation, ArchivedSemaOutcome, SemaObservation, SemaOutcome, ToSemaOutcome,
+    ArchivedMemoryObservation, ArchivedMemoryOutcome, MemoryObservation, MemoryOutcome,
+    ToMemoryOutcome,
 };
 pub use pattern::{
     ArchivedBind, ArchivedPatternField, ArchivedWildcard, Bind, PatternField, Wildcard,

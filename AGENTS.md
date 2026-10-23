@@ -1,6 +1,6 @@
-# signal-sema - Agent Instructions
+# signal-memory - Agent Instructions
 
-This repository is a contract/library crate for Sema execution vocabulary.
+This repository is a contract/library crate for Memory execution vocabulary.
 It is not a daemon, not an actor runtime, and not a component contract.
 
 ## Required Local Reading

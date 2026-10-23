@@ -3,7 +3,7 @@
 #[cfg(feature = "dotos-text")]
 use dotos::{DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
-use signal_sema::{ArchivedMagnitude, Magnitude};
+use signal_memory::{ArchivedMagnitude, Magnitude};
 
 const CANONICAL: &str = include_str!("../examples/canonical.dotos");
 

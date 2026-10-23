@@ -1,4 +1,4 @@
-//! Falsifiable witnesses for the [`SemaOperation`] vocabulary and
+//! Falsifiable witnesses for the [`MemoryOperation`] vocabulary and
 //! the [`OperationClass`] classification.
 //!
 //! If a future change drifts the canonical DOTOS text shape, the
@@ -8,56 +8,59 @@
 #[cfg(feature = "dotos-text")]
 use dotos::{DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
-use signal_sema::{ArchivedSemaOperation, OperationClass, SemaOperation, ToSemaOperation};
+use signal_memory::{ArchivedMemoryOperation, MemoryOperation, OperationClass, ToMemoryOperation};
 
 const CANONICAL: &str = include_str!("../examples/canonical.dotos");
 
-fn operations() -> [SemaOperation; 6] {
+fn operations() -> [MemoryOperation; 6] {
     [
-        SemaOperation::Assert,
-        SemaOperation::Mutate,
-        SemaOperation::Retract,
-        SemaOperation::Match,
-        SemaOperation::Subscribe,
-        SemaOperation::Validate,
+        MemoryOperation::Assert,
+        MemoryOperation::Mutate,
+        MemoryOperation::Retract,
+        MemoryOperation::Match,
+        MemoryOperation::Subscribe,
+        MemoryOperation::Validate,
     ]
 }
 
 #[test]
-fn sema_operation_record_heads_are_stable() {
+fn memory_operation_record_heads_are_stable() {
     let cases = [
-        (SemaOperation::Assert, "Assert"),
-        (SemaOperation::Mutate, "Mutate"),
-        (SemaOperation::Retract, "Retract"),
-        (SemaOperation::Match, "Match"),
-        (SemaOperation::Subscribe, "Subscribe"),
-        (SemaOperation::Validate, "Validate"),
+        (MemoryOperation::Assert, "Assert"),
+        (MemoryOperation::Mutate, "Mutate"),
+        (MemoryOperation::Retract, "Retract"),
+        (MemoryOperation::Match, "Match"),
+        (MemoryOperation::Subscribe, "Subscribe"),
+        (MemoryOperation::Validate, "Validate"),
     ];
 
     for (operation, head) in cases {
         assert_eq!(operation.as_record_head(), head);
-        assert_eq!(SemaOperation::from_record_head(head), Some(operation));
+        assert_eq!(MemoryOperation::from_record_head(head), Some(operation));
         assert!(
             CANONICAL.lines().any(|line| line == head),
             "examples/canonical.dotos missing {head}"
         );
     }
 
-    assert_eq!(SemaOperation::from_record_head("Submit"), None);
+    assert_eq!(MemoryOperation::from_record_head("Submit"), None);
 }
 
 #[test]
-fn sema_operation_classes_are_explicit() {
-    assert_eq!(SemaOperation::Assert.class(), OperationClass::Write);
-    assert_eq!(SemaOperation::Mutate.class(), OperationClass::Write);
-    assert_eq!(SemaOperation::Retract.class(), OperationClass::Write);
-    assert_eq!(SemaOperation::Match.class(), OperationClass::Read);
-    assert_eq!(SemaOperation::Subscribe.class(), OperationClass::Stream);
-    assert_eq!(SemaOperation::Validate.class(), OperationClass::Validation);
+fn memory_operation_classes_are_explicit() {
+    assert_eq!(MemoryOperation::Assert.class(), OperationClass::Write);
+    assert_eq!(MemoryOperation::Mutate.class(), OperationClass::Write);
+    assert_eq!(MemoryOperation::Retract.class(), OperationClass::Write);
+    assert_eq!(MemoryOperation::Match.class(), OperationClass::Read);
+    assert_eq!(MemoryOperation::Subscribe.class(), OperationClass::Stream);
+    assert_eq!(
+        MemoryOperation::Validate.class(),
+        OperationClass::Validation
+    );
 }
 
 #[test]
-fn sema_operation_is_write_matches_class() {
+fn memory_operation_is_write_matches_class() {
     for operation in operations() {
         let class = operation.class();
         let expected = matches!(class, OperationClass::Write);
@@ -76,58 +79,58 @@ enum ExampleCommand {
     OpenStream,
 }
 
-impl ToSemaOperation for ExampleCommand {
-    fn to_sema_operation(&self) -> SemaOperation {
+impl ToMemoryOperation for ExampleCommand {
+    fn to_memory_operation(&self) -> MemoryOperation {
         match self {
-            Self::Insert => SemaOperation::Assert,
-            Self::Read => SemaOperation::Match,
-            Self::OpenStream => SemaOperation::Subscribe,
+            Self::Insert => MemoryOperation::Assert,
+            Self::Read => MemoryOperation::Match,
+            Self::OpenStream => MemoryOperation::Subscribe,
         }
     }
 }
 
 #[test]
-fn component_commands_project_to_sema_operation_classes() {
+fn component_commands_project_to_memory_operation_classes() {
     let cases = [
-        (ExampleCommand::Insert, SemaOperation::Assert),
-        (ExampleCommand::Read, SemaOperation::Match),
-        (ExampleCommand::OpenStream, SemaOperation::Subscribe),
+        (ExampleCommand::Insert, MemoryOperation::Assert),
+        (ExampleCommand::Read, MemoryOperation::Match),
+        (ExampleCommand::OpenStream, MemoryOperation::Subscribe),
     ];
 
     for (command, operation) in cases {
-        assert_eq!(command.to_sema_operation(), operation);
+        assert_eq!(command.to_memory_operation(), operation);
     }
 }
 
 #[test]
-fn sema_operation_projects_to_itself() {
+fn memory_operation_projects_to_itself() {
     for operation in operations() {
-        assert_eq!(operation.to_sema_operation(), operation);
+        assert_eq!(operation.to_memory_operation(), operation);
     }
 }
 
 #[test]
 #[cfg(feature = "dotos-text")]
-fn sema_operations_round_trip_through_dotos() {
+fn memory_operations_round_trip_through_dotos() {
     for operation in operations() {
         let encoded = operation.to_dotos();
         assert_eq!(encoded, operation.as_record_head());
 
         let decoded = DotosSource::new(&encoded)
-            .parse::<SemaOperation>()
+            .parse::<MemoryOperation>()
             .expect("decode");
         assert_eq!(decoded, operation);
     }
 }
 
 #[test]
-fn sema_operations_round_trip_through_rkyv() {
+fn memory_operations_round_trip_through_rkyv() {
     for operation in operations() {
         let bytes = rkyv::to_bytes::<RkyvError>(&operation).expect("archive");
         let archived =
-            rkyv::access::<ArchivedSemaOperation, RkyvError>(&bytes).expect("access archive");
-        let decoded: SemaOperation =
-            rkyv::deserialize::<SemaOperation, RkyvError>(archived).expect("deserialize");
+            rkyv::access::<ArchivedMemoryOperation, RkyvError>(&bytes).expect("access archive");
+        let decoded: MemoryOperation =
+            rkyv::deserialize::<MemoryOperation, RkyvError>(archived).expect("deserialize");
         assert_eq!(decoded, operation);
     }
 }

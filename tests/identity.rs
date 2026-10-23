@@ -4,7 +4,7 @@
 //! the small constructor surface are the contract.
 
 use rkyv::rancor::Error as RkyvError;
-use signal_sema::{ArchivedRevision, ArchivedSlot, Revision, Slot};
+use signal_memory::{ArchivedRevision, ArchivedSlot, Revision, Slot};
 
 #[derive(
     rkyv::Archive,

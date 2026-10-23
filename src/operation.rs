@@ -1,6 +1,6 @@
-//! The closed Sema operation classification vocabulary.
+//! The closed Memory operation classification vocabulary.
 //!
-//! [`SemaOperation`] is the set of payloadless state-action labels
+//! [`MemoryOperation`] is the set of payloadless state-action labels
 //! that component-local executable commands project into for generic
 //! observation.
 
@@ -13,7 +13,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 /// for observation and filtering.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
-pub enum SemaOperation {
+pub enum MemoryOperation {
     /// Insert or append a typed record.
     Assert,
     /// Replace or transition an existing typed record.
@@ -28,7 +28,7 @@ pub enum SemaOperation {
     Validate,
 }
 
-impl SemaOperation {
+impl MemoryOperation {
     /// PascalCase DOTOS record-head identifier for this operation.
     /// Stable across the public DOTOS surface; agents may treat this
     /// as a canonical naming for the operation in chat or text.
@@ -44,7 +44,7 @@ impl SemaOperation {
     }
 
     /// Parse a PascalCase DOTOS record-head identifier back to a
-    /// [`SemaOperation`]. Returns [`None`] for any other identifier.
+    /// [`MemoryOperation`]. Returns [`None`] for any other identifier.
     pub fn from_record_head(name: &str) -> Option<Self> {
         match name {
             "Assert" => Some(Self::Assert),
@@ -78,7 +78,7 @@ impl SemaOperation {
     /// Stable low-byte classification code for compact observations.
     ///
     /// This is vocabulary-local metadata, not a `signal-frame` trait impl:
-    /// the frame kernel and the Sema classification vocabulary stay separate.
+    /// the frame kernel and the Memory classification vocabulary stay separate.
     pub const fn log_variant(self) -> u64 {
         let byte = match self {
             Self::Assert => 0,
@@ -93,25 +93,25 @@ impl SemaOperation {
 }
 
 /// Projection from a component-local executable command into the
-/// universal Sema operation classification vocabulary.
+/// universal Memory operation classification vocabulary.
 ///
 /// Component commands keep their executable payloads in their owning
 /// daemon crate. They implement this trait so observer streams can
 /// filter and summarize state effects using the workspace-wide
-/// [`SemaOperation`] classes without making `SemaOperation` carry
+/// [`MemoryOperation`] classes without making `MemoryOperation` carry
 /// executable payloads.
-pub trait ToSemaOperation {
-    fn to_sema_operation(&self) -> SemaOperation;
+pub trait ToMemoryOperation {
+    fn to_memory_operation(&self) -> MemoryOperation;
 }
 
-impl ToSemaOperation for SemaOperation {
-    fn to_sema_operation(&self) -> SemaOperation {
+impl ToMemoryOperation for MemoryOperation {
+    fn to_memory_operation(&self) -> MemoryOperation {
         *self
     }
 }
 
-/// The broad class of effect a [`SemaOperation`] has against typed
-/// state. The classes are stable; new Sema operations declare their
+/// The broad class of effect a [`MemoryOperation`] has against typed
+/// state. The classes are stable; new Memory operations declare their
 /// class as part of their definition.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]

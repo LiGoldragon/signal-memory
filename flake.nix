@@ -1,5 +1,5 @@
 {
-  description = "signal-sema - Sema operation vocabulary for typed database execution";
+  description = "signal-memory - Memory operation vocabulary for typed database execution";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -63,7 +63,7 @@
           });
         };
         devShells.default = pkgs.mkShell {
-          name = "signal-sema";
+          name = "signal-memory";
           packages = [ pkgs.jujutsu pkgs.pkg-config toolchain ];
         };
       });

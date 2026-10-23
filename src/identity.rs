@@ -1,4 +1,4 @@
-//! Typed identity primitives for Sema-operation payloads.
+//! Typed identity primitives for Memory-operation payloads.
 //!
 //! [`Slot<Payload>`] addresses a stable identity for a typed
 //! record family. [`Revision`] names a particular generation of
@@ -6,7 +6,7 @@
 //! `Retract` point unambiguously at a row in durable state.
 //!
 //! These are **identity values only**. Allocation, lookup, and
-//! compare-and-set behavior belong to the Sema engine; this crate
+//! compare-and-set behavior belong to the Memory engine; this crate
 //! only defines the wire shape and the typed family marker.
 
 use std::marker::PhantomData;
@@ -39,7 +39,7 @@ pub struct Slot<Payload> {
 }
 
 impl<Payload> Slot<Payload> {
-    /// Wrap a raw slot number. The Sema engine owns allocation;
+    /// Wrap a raw slot number. The Memory engine owns allocation;
     /// callers should normally receive slots from the engine rather
     /// than construct them ad-hoc.
     pub const fn new(number: u64) -> Self {

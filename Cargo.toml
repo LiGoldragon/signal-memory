@@ -1,15 +1,15 @@
 [package]
-name         = "signal-sema"
+name         = "signal-memory"
 version      = "0.2.0"
 edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
-repository   = "https://github.com/LiGoldragon/signal-sema"
-description  = "Payloadless Sema operation and outcome classifications for component observation."
+repository   = "https://github.com/LiGoldragon/signal-memory"
+description  = "Payloadless Memory operation and outcome classifications for component observation."
 publish      = false
 
 [lib]
-name = "signal_sema"
+name = "signal_memory"
 path = "src/lib.rs"
 
 [features]

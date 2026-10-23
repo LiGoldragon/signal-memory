@@ -34,7 +34,7 @@ fn default_binary_vocabulary_does_not_depend_on_dotos() {
 
     assert!(
         !tree.contains("dotos") && !tree.contains("dotos"),
-        "default binary signal-sema tree must not contain dotos:\n{tree}"
+        "default binary signal-memory tree must not contain dotos:\n{tree}"
     );
 }
 
