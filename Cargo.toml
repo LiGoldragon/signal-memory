@@ -14,15 +14,15 @@ path = "src/lib.rs"
 
 [features]
 default = []
-nota-text = ["dep:nota"]
+dotos-text = ["dep:dotos"]
 
 [dependencies]
-nota       = { package = "nota", git = "https://github.com/LiGoldragon/nota-next.git", rev = "18e2e8d0dba37e9e84045af3608585b51f6e3b36", optional = true }
+dotos       = { package = "dotos", git = "https://github.com/LiGoldragon/dotos.git", rev = "1facca44fbcb", optional = true }
 rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 thiserror = "2"
 
 [dev-dependencies]
-nota       = { package = "nota", git = "https://github.com/LiGoldragon/nota-next.git", rev = "18e2e8d0dba37e9e84045af3608585b51f6e3b36" }
+dotos       = { package = "dotos", git = "https://github.com/LiGoldragon/dotos.git", rev = "1facca44fbcb" }
 
 [lints.rust]
 unsafe_code = "forbid"

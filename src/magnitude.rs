@@ -7,7 +7,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 /// Ordered qualitative magnitude, from zero through maximum.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
 #[repr(u8)]
 pub enum Magnitude {
     Minimum = 0,
@@ -23,7 +23,7 @@ pub enum Magnitude {
 }
 
 impl Magnitude {
-    /// PascalCase NOTA record-head identifier for this magnitude.
+    /// PascalCase DOTOS record-head identifier for this magnitude.
     pub const fn as_record_head(self) -> &'static str {
         match self {
             Self::Minimum => "Minimum",
@@ -37,7 +37,7 @@ impl Magnitude {
         }
     }
 
-    /// Parse a PascalCase NOTA record-head identifier back to a
+    /// Parse a PascalCase DOTOS record-head identifier back to a
     /// [`Magnitude`]. Returns [`None`] for any other identifier.
     pub fn from_record_head(name: &str) -> Option<Self> {
         match name {

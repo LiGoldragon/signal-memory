@@ -13,31 +13,31 @@
 //! value). A concrete value is encoded as the value itself —
 //! [`PatternField`] is transparent over [`PatternField::Match`].
 
-#[cfg(feature = "nota-text")]
-use nota::{Block, Delimiter, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
+#[cfg(feature = "dotos-text")]
+use dotos::{Block, Delimiter, DotosBlock, DotosDecode, DotosDecodeError, DotosEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 /// Marker for a position that captures the matched value into the
-/// pattern's bind set. Encodes as the empty NOTA record `(Bind)`.
+/// pattern's bind set. Encodes as the empty DOTOS record `(Bind)`.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Bind;
 
-#[cfg(feature = "nota-text")]
-impl NotaEncode for Bind {
-    fn to_nota(&self) -> String {
+#[cfg(feature = "dotos-text")]
+impl DotosEncode for Bind {
+    fn to_dotos(&self) -> String {
         Delimiter::Parenthesis.wrap(["Bind".to_owned()])
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaDecode for Bind {
-    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
-        let children = NotaBlock::new(block).expect_children(Delimiter::Parenthesis, "Bind", 1)?;
+#[cfg(feature = "dotos-text")]
+impl DotosDecode for Bind {
+    fn from_dotos_block(block: &Block) -> Result<Self, DotosDecodeError> {
+        let children = DotosBlock::new(block).expect_children(Delimiter::Parenthesis, "Bind", 1)?;
         let head = children[0]
             .demote_to_string()
-            .ok_or(NotaDecodeError::ExpectedAtom { type_name: "Bind" })?;
+            .ok_or(DotosDecodeError::ExpectedAtom { type_name: "Bind" })?;
         if head != "Bind" {
-            return Err(NotaDecodeError::UnknownVariant {
+            return Err(DotosDecodeError::UnknownVariant {
                 enum_name: "Bind",
                 variant: head.to_owned(),
             });
@@ -47,29 +47,29 @@ impl NotaDecode for Bind {
 }
 
 /// Marker for a position that accepts any value and does not bind
-/// it. Encodes as the empty NOTA record `(Wildcard)`.
+/// it. Encodes as the empty DOTOS record `(Wildcard)`.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Wildcard;
 
-#[cfg(feature = "nota-text")]
-impl NotaEncode for Wildcard {
-    fn to_nota(&self) -> String {
+#[cfg(feature = "dotos-text")]
+impl DotosEncode for Wildcard {
+    fn to_dotos(&self) -> String {
         Delimiter::Parenthesis.wrap(["Wildcard".to_owned()])
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaDecode for Wildcard {
-    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+#[cfg(feature = "dotos-text")]
+impl DotosDecode for Wildcard {
+    fn from_dotos_block(block: &Block) -> Result<Self, DotosDecodeError> {
         let children =
-            NotaBlock::new(block).expect_children(Delimiter::Parenthesis, "Wildcard", 1)?;
+            DotosBlock::new(block).expect_children(Delimiter::Parenthesis, "Wildcard", 1)?;
         let head = children[0]
             .demote_to_string()
-            .ok_or(NotaDecodeError::ExpectedAtom {
+            .ok_or(DotosDecodeError::ExpectedAtom {
                 type_name: "Wildcard",
             })?;
         if head != "Wildcard" {
-            return Err(NotaDecodeError::UnknownVariant {
+            return Err(DotosDecodeError::UnknownVariant {
                 enum_name: "Wildcard",
                 variant: head.to_owned(),
             });
@@ -83,7 +83,7 @@ impl NotaDecode for Wildcard {
 /// concrete value to match against.
 ///
 /// `PatternField` is **transparent** over [`Self::Match`]: the
-/// inner value's NOTA encoding is used directly. [`Self::Bind`]
+/// inner value's DOTOS encoding is used directly. [`Self::Bind`]
 /// and [`Self::Wildcard`] encode as the typed records `(Bind)` and
 /// `(Wildcard)`.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq, Hash)]
@@ -97,31 +97,31 @@ pub enum PatternField<T> {
     Match(T),
 }
 
-#[cfg(feature = "nota-text")]
-impl<T: NotaEncode> NotaEncode for PatternField<T> {
-    fn to_nota(&self) -> String {
+#[cfg(feature = "dotos-text")]
+impl<T: DotosEncode> DotosEncode for PatternField<T> {
+    fn to_dotos(&self) -> String {
         match self {
-            Self::Wildcard => Wildcard.to_nota(),
-            Self::Bind => Bind.to_nota(),
-            Self::Match(value) => value.to_nota(),
+            Self::Wildcard => Wildcard.to_dotos(),
+            Self::Bind => Bind.to_dotos(),
+            Self::Match(value) => value.to_dotos(),
         }
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl<T: NotaDecode> NotaDecode for PatternField<T> {
-    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+#[cfg(feature = "dotos-text")]
+impl<T: DotosDecode> DotosDecode for PatternField<T> {
+    fn from_dotos_block(block: &Block) -> Result<Self, DotosDecodeError> {
         if let Some(children) = block.as_delimited(Delimiter::Parenthesis)
             && let Some(head) = children.first().and_then(Block::demote_to_string)
         {
             match head {
-                "Bind" => return Bind::from_nota_block(block).map(|_| Self::Bind),
+                "Bind" => return Bind::from_dotos_block(block).map(|_| Self::Bind),
                 "Wildcard" => {
-                    return Wildcard::from_nota_block(block).map(|_| Self::Wildcard);
+                    return Wildcard::from_dotos_block(block).map(|_| Self::Wildcard);
                 }
                 _ => {}
             }
         }
-        T::from_nota_block(block).map(Self::Match)
+        T::from_dotos_block(block).map(Self::Match)
     }
 }

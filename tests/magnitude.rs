@@ -1,11 +1,11 @@
 //! Falsifiable witnesses for the ordered [`Magnitude`] vocabulary.
 
-#[cfg(feature = "nota-text")]
-use nota::{NotaEncode, NotaSource};
+#[cfg(feature = "dotos-text")]
+use dotos::{DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
 use signal_sema::{ArchivedMagnitude, Magnitude};
 
-const CANONICAL: &str = include_str!("../examples/canonical.nota");
+const CANONICAL: &str = include_str!("../examples/canonical.dotos");
 
 fn magnitudes() -> [Magnitude; 8] {
     [
@@ -38,7 +38,7 @@ fn magnitude_record_heads_are_stable() {
         assert_eq!(Magnitude::from_record_head(head), Some(magnitude));
         assert!(
             CANONICAL.lines().any(|line| line == head),
-            "examples/canonical.nota missing {head}"
+            "examples/canonical.dotos missing {head}"
         );
     }
 
@@ -46,13 +46,13 @@ fn magnitude_record_heads_are_stable() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn magnitudes_round_trip_through_nota() {
+#[cfg(feature = "dotos-text")]
+fn magnitudes_round_trip_through_dotos() {
     for magnitude in magnitudes() {
-        let encoded = magnitude.to_nota();
+        let encoded = magnitude.to_dotos();
         assert_eq!(encoded, magnitude.as_record_head());
 
-        let decoded = NotaSource::new(&encoded)
+        let decoded = DotosSource::new(&encoded)
             .parse::<Magnitude>()
             .expect("decode");
         assert_eq!(decoded, magnitude);
@@ -60,9 +60,9 @@ fn magnitudes_round_trip_through_nota() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn magnitude_nota_rejects_unknown_head() {
-    assert!(NotaSource::new("VeryMedium").parse::<Magnitude>().is_err());
+#[cfg(feature = "dotos-text")]
+fn magnitude_dotos_rejects_unknown_head() {
+    assert!(DotosSource::new("VeryMedium").parse::<Magnitude>().is_err());
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn canonical_examples_cover_every_magnitude() {
         let count = canonical_heads.iter().filter(|line| **line == head).count();
         assert_eq!(
             count, 1,
-            "examples/canonical.nota must contain {head} exactly once"
+            "examples/canonical.dotos must contain {head} exactly once"
         );
     }
 }

@@ -1,14 +1,14 @@
 //! Falsifiable witnesses for outcome-side Sema classification.
 
-#[cfg(feature = "nota-text")]
-use nota::{NotaEncode, NotaSource};
+#[cfg(feature = "dotos-text")]
+use dotos::{DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
 use signal_sema::{
     ArchivedSemaObservation, ArchivedSemaOutcome, SemaObservation, SemaOperation, SemaOutcome,
     ToSemaOperation, ToSemaOutcome,
 };
 
-const CANONICAL: &str = include_str!("../examples/canonical.nota");
+const CANONICAL: &str = include_str!("../examples/canonical.dotos");
 
 fn outcomes() -> [SemaOutcome; 7] {
     [
@@ -55,7 +55,7 @@ fn sema_outcome_record_heads_are_stable() {
         assert_eq!(SemaOutcome::from_record_head(head), Some(outcome));
         assert!(
             CANONICAL.lines().any(|line| line == head),
-            "examples/canonical.nota missing {head}"
+            "examples/canonical.dotos missing {head}"
         );
     }
 
@@ -147,13 +147,13 @@ fn sema_observation_composes_command_and_effect_projection() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn sema_outcomes_round_trip_through_nota() {
+#[cfg(feature = "dotos-text")]
+fn sema_outcomes_round_trip_through_dotos() {
     for outcome in outcomes() {
-        let encoded = outcome.to_nota();
+        let encoded = outcome.to_dotos();
         assert_eq!(encoded, outcome.as_record_head());
 
-        let decoded = NotaSource::new(&encoded)
+        let decoded = DotosSource::new(&encoded)
             .parse::<SemaOutcome>()
             .expect("decode");
         assert_eq!(decoded, outcome);
@@ -161,11 +161,11 @@ fn sema_outcomes_round_trip_through_nota() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn sema_observation_round_trips_through_nota() {
+#[cfg(feature = "dotos-text")]
+fn sema_observation_round_trips_through_dotos() {
     let observation = SemaObservation::new(SemaOperation::Subscribe, SemaOutcome::Subscribed);
-    let encoded = observation.to_nota();
-    let decoded = NotaSource::new(&encoded)
+    let encoded = observation.to_dotos();
+    let decoded = DotosSource::new(&encoded)
         .parse::<SemaObservation>()
         .expect("decode");
     assert_eq!(decoded, observation);

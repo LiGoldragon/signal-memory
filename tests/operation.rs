@@ -1,16 +1,16 @@
 //! Falsifiable witnesses for the [`SemaOperation`] vocabulary and
 //! the [`OperationClass`] classification.
 //!
-//! If a future change drifts the canonical NOTA text shape, the
+//! If a future change drifts the canonical DOTOS text shape, the
 //! rkyv archive layout, or the operation-class mapping, exactly one
 //! of these tests breaks and names the variant that drifted.
 
-#[cfg(feature = "nota-text")]
-use nota::{NotaEncode, NotaSource};
+#[cfg(feature = "dotos-text")]
+use dotos::{DotosEncode, DotosSource};
 use rkyv::rancor::Error as RkyvError;
 use signal_sema::{ArchivedSemaOperation, OperationClass, SemaOperation, ToSemaOperation};
 
-const CANONICAL: &str = include_str!("../examples/canonical.nota");
+const CANONICAL: &str = include_str!("../examples/canonical.dotos");
 
 fn operations() -> [SemaOperation; 6] {
     [
@@ -39,7 +39,7 @@ fn sema_operation_record_heads_are_stable() {
         assert_eq!(SemaOperation::from_record_head(head), Some(operation));
         assert!(
             CANONICAL.lines().any(|line| line == head),
-            "examples/canonical.nota missing {head}"
+            "examples/canonical.dotos missing {head}"
         );
     }
 
@@ -107,13 +107,13 @@ fn sema_operation_projects_to_itself() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn sema_operations_round_trip_through_nota() {
+#[cfg(feature = "dotos-text")]
+fn sema_operations_round_trip_through_dotos() {
     for operation in operations() {
-        let encoded = operation.to_nota();
+        let encoded = operation.to_dotos();
         assert_eq!(encoded, operation.as_record_head());
 
-        let decoded = NotaSource::new(&encoded)
+        let decoded = DotosSource::new(&encoded)
             .parse::<SemaOperation>()
             .expect("decode");
         assert_eq!(decoded, operation);

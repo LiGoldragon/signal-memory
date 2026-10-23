@@ -12,7 +12,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 /// own executable command records and project them into this enum
 /// for observation and filtering.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
 pub enum SemaOperation {
     /// Insert or append a typed record.
     Assert,
@@ -29,8 +29,8 @@ pub enum SemaOperation {
 }
 
 impl SemaOperation {
-    /// PascalCase NOTA record-head identifier for this operation.
-    /// Stable across the public NOTA surface; agents may treat this
+    /// PascalCase DOTOS record-head identifier for this operation.
+    /// Stable across the public DOTOS surface; agents may treat this
     /// as a canonical naming for the operation in chat or text.
     pub const fn as_record_head(self) -> &'static str {
         match self {
@@ -43,7 +43,7 @@ impl SemaOperation {
         }
     }
 
-    /// Parse a PascalCase NOTA record-head identifier back to a
+    /// Parse a PascalCase DOTOS record-head identifier back to a
     /// [`SemaOperation`]. Returns [`None`] for any other identifier.
     pub fn from_record_head(name: &str) -> Option<Self> {
         match name {
@@ -114,7 +114,7 @@ impl ToSemaOperation for SemaOperation {
 /// state. The classes are stable; new Sema operations declare their
 /// class as part of their definition.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
 pub enum OperationClass {
     /// Transactional change to typed-record state. `Assert`,
     /// `Mutate`, `Retract`.

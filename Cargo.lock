@@ -121,18 +121,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "nota"
+name = "dotos"
 version = "0.8.0"
-source = "git+https://github.com/LiGoldragon/nota-next.git?rev=18e2e8d0dba37e9e84045af3608585b51f6e3b36#18e2e8d0dba37e9e84045af3608585b51f6e3b36"
+source = "git+https://github.com/LiGoldragon/dotos.git?rev=18e2e8d0dba37e9e84045af3608585b51f6e3b36#18e2e8d0dba37e9e84045af3608585b51f6e3b36"
 dependencies = [
- "nota-derive",
+ "dotos-derive",
  "rkyv",
 ]
 
 [[package]]
-name = "nota-derive"
+name = "dotos-derive"
 version = "0.4.0"
-source = "git+https://github.com/LiGoldragon/nota-next.git?rev=18e2e8d0dba37e9e84045af3608585b51f6e3b36#18e2e8d0dba37e9e84045af3608585b51f6e3b36"
+source = "git+https://github.com/LiGoldragon/dotos.git?rev=18e2e8d0dba37e9e84045af3608585b51f6e3b36#18e2e8d0dba37e9e84045af3608585b51f6e3b36"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -247,7 +247,7 @@ checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
 name = "signal-sema"
 version = "0.2.0"
 dependencies = [
- "nota",
+ "dotos",
  "rkyv",
  "thiserror",
 ]

@@ -14,7 +14,7 @@ use crate::{SemaOperation, ToSemaOperation};
 /// events carry those details separately; this enum classifies what
 /// happened in the broad workspace vocabulary.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
 pub enum SemaOutcome {
     /// A new typed fact / event / row was appended.
     Asserted,
@@ -33,7 +33,7 @@ pub enum SemaOutcome {
 }
 
 impl SemaOutcome {
-    /// PascalCase NOTA record-head identifier for this outcome.
+    /// PascalCase DOTOS record-head identifier for this outcome.
     pub const fn as_record_head(self) -> &'static str {
         match self {
             Self::Asserted => "Asserted",
@@ -46,7 +46,7 @@ impl SemaOutcome {
         }
     }
 
-    /// Parse a PascalCase NOTA record-head identifier back to a
+    /// Parse a PascalCase DOTOS record-head identifier back to a
     /// [`SemaOutcome`].
     pub fn from_record_head(name: &str) -> Option<Self> {
         match name {
@@ -91,7 +91,7 @@ impl ToSemaOutcome for SemaOutcome {
 /// Universal observation label produced from a component command and
 /// the effect it caused.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(feature = "nota-text", derive(nota::NotaEncode, nota::NotaDecode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosEncode, dotos::DotosDecode))]
 pub struct SemaObservation {
     pub operation: SemaOperation,
     pub outcome: SemaOutcome,

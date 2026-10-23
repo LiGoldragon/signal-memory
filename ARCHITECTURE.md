@@ -15,7 +15,7 @@ values components carry inside their own typed records.
 The classification vocabulary is the third layer of the three-layer
 model affirmed 2026-05-20 (per
 `reports/designer/246-v4-bundled-fix-deep-design-with-examples.md`
-and `intent/component-shape.nota` 2026-05-20T02:00Z):
+and `intent/component-shape.dotos` 2026-05-20T02:00Z):
 
 | Layer | Owns | Examples |
 |---|---|---|
@@ -57,11 +57,11 @@ primary workspace:
 - `SemaObservation` joins one `SemaOperation` with one `SemaOutcome`;
   it does not carry timing, sequence, or component payload data.
 - `SemaOperation` is rkyv-archivable in the default binary library;
-  NOTA encoding/decoding is available only under the `nota-text`
+  DOTOS encoding/decoding is available only under the `dotos-text`
   feature.
 - `SemaOutcome` and `SemaObservation` are rkyv-archivable in the
-  default binary library; NOTA encoding/decoding is available only
-  under the `nota-text` feature.
+  default binary library; DOTOS encoding/decoding is available only
+  under the `dotos-text` feature.
 - `Magnitude` currently encodes the eight ordered qualitative
   strength rungs from `Zero` through `Maximum`; `Zero` is the
   policy-neutral bottom rung for "no signal" / withdrawn strength.
@@ -377,7 +377,7 @@ flowchart TB
   exchange identifiers, async correlation, streams, and reply
   plumbing live in `signal-frame`.)
 - No authorization or routing.
-- No NOTA surface policy beyond typed record codec.
+- No DOTOS surface policy beyond typed record codec.
 - No `ReadPlan` operators (`Constrain`, `Project`, `Aggregate`,
   `Infer`, `Recurse`). Those belong in `sema-engine` and/or in
   component contracts that publish their read plans.
@@ -401,22 +401,22 @@ uncertainty".*
 
 ```text
 src/lib.rs       module entry and re-exports
-src/operation.rs SemaOperation + OperationClass; NotaEnum derives
-src/outcome.rs   SemaOutcome + SemaObservation; NotaEnum/NotaRecord derives
-src/magnitude.rs Magnitude; current ordered eight-level NotaEnum
+src/operation.rs SemaOperation + OperationClass; DotosEnum derives
+src/outcome.rs   SemaOutcome + SemaObservation; DotosEnum/DotosRecord derives
+src/magnitude.rs Magnitude; current ordered eight-level DotosEnum
 src/pattern.rs   Bind, Wildcard, PatternField<T>; hand-written codec
 src/identity.rs  Slot<Payload>, Revision; rkyv identity records
-tests/operation.rs   SemaOperation round trips (NOTA + rkyv) and
+tests/operation.rs   SemaOperation round trips (DOTOS + rkyv) and
                      class/is-write witnesses
 tests/outcome.rs     SemaOutcome + SemaObservation projection and
-                     round trips (NOTA + rkyv)
-tests/magnitude.rs   Magnitude round trips (NOTA + rkyv), current
+                     round trips (DOTOS + rkyv)
+tests/magnitude.rs   Magnitude round trips (DOTOS + rkyv), current
                      ordering, unknown-head rejection, and canonical
                      coverage
 tests/pattern.rs     Bind / Wildcard / PatternField<T> round trips
-                     (NOTA + rkyv) and pattern dispatch witnesses
+                     (DOTOS + rkyv) and pattern dispatch witnesses
 tests/identity.rs    Slot<T> / Revision rkyv round trips
-examples/canonical.nota  Canonical record-head spelling per operation/outcome
+examples/canonical.dotos  Canonical record-head spelling per operation/outcome
 ```
 
 ## Macro-pattern integration
